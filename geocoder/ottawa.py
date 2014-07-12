@@ -43,9 +43,10 @@ for row in c.fetchall():
 
     # Provider
     if location:
+        location = location.strip()
         c.execute(sql_exists, ('Bing', location))
         if not c.fetchone():
-            g = geocoder.bing(location.strip())
+            g = geocoder.bing(location)
             if g.ok:
                 c.execute(sql_insert,(location, json.dumps(g.json)))
                 print location
