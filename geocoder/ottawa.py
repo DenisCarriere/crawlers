@@ -35,10 +35,7 @@ VALUES(%s,%s, ST_GeomFromText('POINT({lng} {lat})', 4326))
 
 # Loop inside all the data from Ottawa
 c.execute(sql_search)
-rows = c.fetchall()
-print len(rows), 'will be parsed using Bing.'
-
-for row in rows:
+for row in c.fetchall():
     location = row['location']
     lng = row['lng']
     lat = row['lat']
@@ -51,5 +48,5 @@ for row in rows:
             g = geocoder.bing(location.strip())
             if g.ok:
                 c.execute(sql_insert,(location, json.dumps(g.json)))
-                print g
+                print location
                 conn.commit()
