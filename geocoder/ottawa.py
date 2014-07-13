@@ -27,7 +27,8 @@ for row in c.fetchall():
         location = location.strip()
 
         # Check if location already exists in Geocoder DB
-        c.execute(sql.exists(provider, location))
+        c.execute(sql.exists(),
+            (provider, location))
         if not c.fetchone():
             # Select your provider for geocoding
             if provider == 'Bing':

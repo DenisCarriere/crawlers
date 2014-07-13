@@ -13,12 +13,11 @@ def search(provider='Bing', city='ottawa'):
         ORDER BY random()
         """.format(city=city, provider=provider)
 
-def exists(provider='Bing', location='<address>'):
+def exists():
     return """
         SELECT location FROM geocoder
-        WHERE provider='{provider}' AND location='{location}'
-        """.format(provider=provider, location=location)
-
+        WHERE provider=%s AND location=%s
+        """
 
 def insert(fieldnames=['location', 'data', 'provider', 'distance', 'geom'], lat='', lng=''):
     len_fieldnames = len(fieldnames)
