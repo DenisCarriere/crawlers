@@ -51,7 +51,7 @@ for row in c.fetchall():
     sql_insert = sql_insert.format(lat=lat, lng=lng)
 
     # Provider
-    if location:
+    if bool(location and lng and lat):
         location = location.strip()
         c.execute(sql_exists, ('Bing', location))
         if not c.fetchone():
@@ -60,6 +60,6 @@ for row in c.fetchall():
             distance = c.fetchone()['distance']
             if g.ok:
                 c.execute(sql_insert,(location, json.dumps(g.json), 'Bing', distance))
-                if distance > 500:
+                if distance > 200:
                     print distance, '-', location
                 conn.commit()
