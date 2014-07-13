@@ -18,23 +18,25 @@ WHERE NOT EXISTS (
     SELECT location
     FROM geocoder
     WHERE ottawa.location = geocoder.location AND
-    geocoder.data->>'provider' = 'Google')
+    provider = 'Bing')
 ORDER BY random()
 """
 
 sql_exists = """
 SELECT location FROM geocoder
-WHERE geocoder.data->>'provider'=%s AND location=%s
+WHERE provider=%s AND location=%s
 """
 
 sql_insert = """
-INSERT INTO geocoder (location, data, geom)
-VALUES(%s,%s, ST_GeomFromText('POINT({lng} {lat})', 4326))
+INSERT INTO geocoder (location, data, provider, geom)
+VALUES(%s,%s,%s, ST_GeomFromText('POINT({lng} {lat})', 4326))
 """
 
 
 # Loop inside all the data from Ottawa
 c.execute(sql_search)
+rows = c.fetchall()
+
 for row in c.fetchall():
     location = row['location']
     lng = row['lng']
@@ -49,5 +51,4 @@ for row in c.fetchall():
             g = geocoder.bing(location)
             if g.ok:
                 c.execute(sql_insert,(location, json.dumps(g.json)))
-                print location
                 conn.commit()
