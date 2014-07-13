@@ -20,7 +20,7 @@ WHERE NOT EXISTS (
     WHERE ottawa.location = geocoder.location AND
     provider = 'Bing')
 ORDER BY random()
-LIMIT 5000
+LIMIT 25000
 """
 
 sql_exists = """
@@ -52,13 +52,20 @@ for row in c.fetchall():
 
     # Provider
     if bool(location and lng and lat):
+        # Remove white spaces in location name
         location = location.strip()
+
+        # Check if location already exists in Geocoder DB
         c.execute(sql_exists, ('Bing', location))
         if not c.fetchone():
             g = geocoder.bing(location)
-            c.execute(sql_distance.format(lat, lng, g.lat, g.lng))
-            distance = c.fetchone()['distance']
+
             if g.ok:
+                # Calculate Distance
+                c.execute(sql_distance.format(lat, lng, g.lat, g.lng))
+                distance = c.fetchone()['distance']
+
+                # Insert Into Rows
                 c.execute(sql_insert,(location, json.dumps(g.json), 'Bing', distance))
                 if distance > 200:
                     print distance, '-', location
