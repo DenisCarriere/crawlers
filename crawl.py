@@ -24,10 +24,11 @@ def sql_search_remaining(c, provider, city):
         WHERE NOT EXISTS (
         SELECT location
         FROM geocoder
-        WHERE geocoder.location = {city}.location AND
-        geocoder.data->>'provider' = %s)""".format(city=city)
+        WHERE geocoder.location = {city}.location 
+        AND provider = %s
+        AND city = %s)""".format(city=city)
 
-    c.execute(sql, (provider,))
+    c.execute(sql, (provider, city))
     return c.fetchall()
 
 def sql_check_exists(c, location, provider):
@@ -67,9 +68,15 @@ def sql_insert_row(c, location, address, data, distance, city, provider, wkt, st
 
 
 if __name__ == '__main__':
+    import sys
+
+
     # Main Variables
     provider = 'Bing'
-    city = 'ottawa'
+    if sys.argv > 2:
+        city = sys.argv[-1].lower()
+    else:
+        city = 'waterloo'
 
     # Main Program
     for item in sql_search_remaining(c, provider, city):
@@ -104,6 +111,6 @@ if __name__ == '__main__':
                 lat=g.lat, lng=g.lng)
             conn.commit()
 
-            print location, distance, '-', g
+            print distance, '-', g
         else:
             print 'SKIPPED!',location
