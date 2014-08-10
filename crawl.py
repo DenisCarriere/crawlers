@@ -105,12 +105,12 @@ if __name__ == '__main__':
                 distance=distance,
                 city=city, 
                 provider=provider,
-                wkt=g.wkt,
+                wkt=g.wkt.get('point'),
                 status=g.status,
                 x=x, y=y, 
                 lat=g.lat, lng=g.lng)
             conn.commit()
 
-            print distance, '-', g
+            print location, distance, '-', g
         else:
             print 'SKIPPED!',location
