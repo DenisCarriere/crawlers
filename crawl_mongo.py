@@ -12,7 +12,7 @@ MONGO_URL = os.environ.get('MONGOHQ_URL')
 client = MongoClient(MONGO_URL)
 db = client['geocoder']
 db_city = db[city]
-db_geocoder = db['geocoder']
+db_geocoder = db[provider]
 
 # Find Existing in Geocoder
 existing = dict()
