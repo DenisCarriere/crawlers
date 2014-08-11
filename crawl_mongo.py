@@ -1,27 +1,28 @@
 import geocoder
-import time
 from pymongo import MongoClient
 from haversine import haversine
+import os
 
 # Program Variables
-provider = 'Bing'
+provider = 'osm'
 city = 'ottawa'
 
 # Connec to MongoDB
 MONGO_URL = os.environ.get('MONGOHQ_URL')
 client = MongoClient(MONGO_URL)
 db = client['geocoder']
-db_ottawa = db[city]
+db_city = db[city]
 db_geocoder = db['geocoder']
 
-# Find Existing
+# Find Existing in Geocoder
 existing = dict()
 for item in db_geocoder.find({'provider':provider, 'city':city}):
     existing[item['location']] = ''
 print 'Existing:', len(existing)
 
+# Find Existing in City
 search = list()
-for item in db_ottawa.find():
+for item in db_city.find().skip(50).limit(5000):
     if not item['location'] in existing:
         search.append(item)
 print 'Remaining:', len(search)
@@ -29,13 +30,12 @@ print 'Remaining:', len(search)
 # Scan Database
 for item in search:
     location = item['location']
-    x, y = item['loc']['coordinates']
+    x, y = item['geometry']['coordinates']
         
     # Geocode Address
-    if provider == 'Bing': 
+    if provider == 'bing': 
         g = geocoder.bing(location)
-    elif provider == 'OSM':
-        time.sleep(1)
+    elif provider == 'osm':
         g = geocoder.osm(location)
 
     # Calculate Distance with Haversine formula
