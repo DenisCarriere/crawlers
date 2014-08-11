@@ -8,8 +8,9 @@ provider = 'Bing'
 city = 'ottawa'
 
 # Connec to MongoDB
-client = MongoClient()
-db = client['mydb']
+MONGO_URL = os.environ.get('MONGOHQ_URL')
+client = MongoClient(MONGO_URL)
+db = client['geocoder']
 db_ottawa = db[city]
 db_geocoder = db['geocoder']
 
