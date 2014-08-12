@@ -1,8 +1,5 @@
-import geocoder
 from pymongo import MongoClient
-from haversine import haversine
 import os
-import time
 
 
 # Program Variables
@@ -15,3 +12,7 @@ client = MongoClient(MONGO_URL)
 db = client['geocoder']
 db_city = db[city]
 db_geocoder = db[provider]
+
+
+
+print db_city.count()
