@@ -2,6 +2,8 @@ import geocoder
 from pymongo import MongoClient
 from haversine import haversine
 import os
+import time
+
 
 # Program Variables
 provider = 'osm'
@@ -22,7 +24,7 @@ print 'Existing:', len(existing)
 
 # Find Existing in City
 search = list()
-for item in db_city.find().skip(50).limit(5000):
+for item in db_city.find().skip(22000).limit(50000):
     if not item['location'] in existing:
         search.append(item)
 print 'Remaining:', len(search)
@@ -36,6 +38,7 @@ for item in search:
     if provider == 'bing': 
         g = geocoder.bing(location)
     elif provider == 'osm':
+        time.sleep(1)
         g = geocoder.osm(location)
 
     # Calculate Distance with Haversine formula
@@ -49,6 +52,10 @@ for item in search:
     # Save in Mongo DB
     try:
         db_geocoder.insert(results)
+    except:
+        print 'Duplicate'
+
+    try:
         print '[{0}] {1} ({2}) {3}'.format(g.status, provider, distance, location)
     except:
-        print 'Duplicate -', location
+        pass
